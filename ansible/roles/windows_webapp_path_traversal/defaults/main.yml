@@ -1,0 +1,6 @@
+---
+windows_webapp_path_traversal_enabled: false
+windows_webapp_path_traversal_target_profile: windows-standard-2022
+windows_webapp_path_traversal_site: ''
+windows_webapp_path_traversal_setting: ''
+windows_webapp_path_traversal_value: ''
