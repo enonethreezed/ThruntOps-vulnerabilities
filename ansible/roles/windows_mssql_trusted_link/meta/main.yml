@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: windows_mssql_trusted_link, author: ThruntOps-vulnerabilities, description: MSSQL trusted link lab condition, min_ansible_version: '2.12' }
+dependencies: []

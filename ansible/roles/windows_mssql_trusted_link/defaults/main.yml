@@ -1,0 +1,5 @@
+---
+windows_mssql_trusted_link_enabled: false
+windows_mssql_trusted_link_target_profile: windows-standard-2022
+windows_mssql_trusted_link_instance: ''
+windows_mssql_trusted_link_query: ''
