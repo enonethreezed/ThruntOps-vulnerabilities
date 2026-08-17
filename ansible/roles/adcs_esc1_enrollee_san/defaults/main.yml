@@ -1,0 +1,4 @@
+---
+adcs_esc1_enrollee_san_enabled: false
+adcs_esc1_enrollee_san_target_profile: windows-standard-2022
+adcs_esc1_enrollee_san_template_dn: ''
