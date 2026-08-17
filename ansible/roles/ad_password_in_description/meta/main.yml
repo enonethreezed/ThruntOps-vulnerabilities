@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_password_in_description
+  author: ThruntOps-vulnerabilities
+  description: Set a declared description on an AD user.
+  min_ansible_version: "2.12"
+dependencies: []

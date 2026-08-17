@@ -1,0 +1,20 @@
+---
+- name: Validate description role inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_password_in_description_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_password_in_description_user | length > 0
+      - ad_password_in_description_value | length > 0
+    fail_msg: Set a supported profile, an existing user, and a lab-only value.
+
+- name: Set the declared user description
+  ansible.windows.win_powershell:
+    parameters:
+      UserName: "{{ ad_password_in_description_user }}"
+      Value: "{{ ad_password_in_description_value }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $user = Get-ADUser -Identity $UserName -Properties Description -ErrorAction Stop
+      if ($user.Description -ne $Value) { Set-ADUser -Identity $user -Description $Value; $Ansible.Changed = $true }
+  no_log: true
