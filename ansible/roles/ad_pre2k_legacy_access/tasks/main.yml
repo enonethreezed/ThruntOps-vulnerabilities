@@ -1,0 +1,18 @@
+---
+- name: Validate legacy access inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_pre2k_legacy_access_target_profile in ['windows-legacy-2016', 'windows-standard-2022']
+      - ad_pre2k_legacy_access_principals | length > 0
+    fail_msg: Set a legacy-compatible profile and existing domain principals.
+
+- name: Add declared principals to legacy compatible access
+  ansible.windows.win_powershell:
+    parameters:
+      GroupName: "{{ ad_pre2k_legacy_access_group }}"
+      Principals: "{{ ad_pre2k_legacy_access_principals }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $group = Get-ADGroup -Identity $GroupName -ErrorAction Stop
+      foreach ($principal in $Principals) { $member = Get-ADObject -Identity $principal -ErrorAction Stop; if (-not (Get-ADGroupMember -Identity $group | Where-Object DistinguishedName -eq $member.DistinguishedName)) { Add-ADGroupMember -Identity $group -Members $member; $Ansible.Changed = $true } }
