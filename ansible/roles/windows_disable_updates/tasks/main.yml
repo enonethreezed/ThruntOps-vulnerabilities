@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_disable_updates_enabled }}", lab_target_profile: "{{ windows_disable_updates_target_profile }}", lab_action: updates_disabled, lab_target: localhost, lab_required_feature: '', lab_required_service: wuauserv, lab_principal: '', lab_value: '', lab_path: '', lab_windows_features: [], lab_no_log: false }
