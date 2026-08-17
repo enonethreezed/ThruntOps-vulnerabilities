@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_password_spraying
+  author: ThruntOps-vulnerabilities
+  description: Set one declared lab password for a declared user set.
+  min_ansible_version: "2.12"
+dependencies: []

@@ -1,0 +1,20 @@
+---
+- name: Validate shared password role inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_password_spraying_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_password_spraying_users | length > 1
+      - ad_password_spraying_value | length > 0
+    fail_msg: Set a supported profile, at least two existing users, and a lab-only password.
+
+- name: Set the shared declared password
+  ansible.windows.win_powershell:
+    parameters:
+      Users: "{{ ad_password_spraying_users }}"
+      Password: "{{ ad_password_spraying_value }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $secure = ConvertTo-SecureString $Password -AsPlainText -Force
+      foreach ($name in $Users) { Set-ADAccountPassword -Identity (Get-ADUser -Identity $name -ErrorAction Stop) -Reset -NewPassword $secure; $Ansible.Changed = $true }
+  no_log: true
