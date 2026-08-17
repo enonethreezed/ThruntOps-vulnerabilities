@@ -1,0 +1,5 @@
+---
+ad_weak_password_policy_target_profile: windows-standard-2022
+ad_weak_password_policy_min_length: ""
+ad_weak_password_policy_complexity_enabled: ""
+ad_weak_password_policy_lockout_threshold: ""

@@ -1,0 +1,26 @@
+---
+- name: Validate weak password policy inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_weak_password_policy_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_weak_password_policy_min_length | string | length > 0
+      - ad_weak_password_policy_complexity_enabled | string | lower in ['true', 'false']
+      - ad_weak_password_policy_lockout_threshold | string | length > 0
+      - ad_weak_password_policy_min_length | int >= 0
+      - ad_weak_password_policy_lockout_threshold | int >= 0
+    fail_msg: Set a supported profile and non-negative password policy values.
+
+- name: Configure the declared domain password policy
+  ansible.windows.win_powershell:
+    parameters:
+      MinimumPasswordLength: "{{ ad_weak_password_policy_min_length }}"
+      ComplexityEnabled: "{{ ad_weak_password_policy_complexity_enabled }}"
+      LockoutThreshold: "{{ ad_weak_password_policy_lockout_threshold }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $policy = Get-ADDefaultDomainPasswordPolicy
+      if ($policy.MinPasswordLength -ne [int]$MinimumPasswordLength -or $policy.ComplexityEnabled -ne [bool]$ComplexityEnabled -or $policy.LockoutThreshold -ne [int]$LockoutThreshold) {
+        Set-ADDefaultDomainPasswordPolicy -Identity $policy -MinPasswordLength ([int]$MinimumPasswordLength) -ComplexityEnabled ([bool]$ComplexityEnabled) -LockoutThreshold ([int]$LockoutThreshold) -ErrorAction Stop
+        $Ansible.Changed = $true
+      }
