@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: adcs_rdp_low_privilege, author: ThruntOps-vulnerabilities, description: Low privilege RDP access on CA lab condition, min_ansible_version: '2.12' }
+dependencies: []

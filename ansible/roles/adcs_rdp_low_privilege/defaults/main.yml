@@ -1,0 +1,5 @@
+---
+adcs_rdp_low_privilege_enabled: false
+adcs_rdp_low_privilege_target_profile: windows-standard-2022
+adcs_rdp_low_privilege_host: ''
+adcs_rdp_low_privilege_principal: ''
