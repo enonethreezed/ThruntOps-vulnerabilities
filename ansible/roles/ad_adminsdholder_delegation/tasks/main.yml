@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ ad_adminsdholder_delegation_enabled }}", lab_target_profile: "{{ ad_adminsdholder_delegation_target_profile }}", lab_action: ad_acl, lab_target: "{{ ad_adminsdholder_delegation_dn }}", lab_required_feature: AD-Domain-Services, lab_required_service: ADWS, lab_principal: "{{ ad_adminsdholder_delegation_principal }}", lab_value: '', lab_path: '', lab_windows_features: [AD-Domain-Services], lab_no_log: false }
