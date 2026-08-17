@@ -1,0 +1,5 @@
+---
+gitlab_cicd_pipeline_poisoning_enabled: false
+gitlab_cicd_pipeline_poisoning_url: ''
+gitlab_cicd_pipeline_poisoning_token: ''
+gitlab_cicd_pipeline_poisoning_project: ''

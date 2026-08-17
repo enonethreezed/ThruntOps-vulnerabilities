@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/gitlab.yml
+  vars: { lab_enabled: "{{ gitlab_cicd_pipeline_poisoning_enabled }}", lab_gitlab_url: "{{ gitlab_cicd_pipeline_poisoning_url }}", lab_gitlab_token: "{{ gitlab_cicd_pipeline_poisoning_token }}", lab_gitlab_project: "{{ gitlab_cicd_pipeline_poisoning_project }}", lab_gitlab_settings: { build_timeout: 3600 } }
