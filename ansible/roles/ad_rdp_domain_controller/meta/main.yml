@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_rdp_domain_controller
+  author: ThruntOps-vulnerabilities
+  description: Grant declared AD principals RDP access on a domain controller.
+  min_ansible_version: "2.12"
+dependencies: []

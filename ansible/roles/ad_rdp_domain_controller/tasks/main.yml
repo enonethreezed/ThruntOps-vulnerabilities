@@ -1,0 +1,24 @@
+---
+- name: Validate RDP on DC role inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_rdp_domain_controller_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_rdp_domain_controller_principals | length > 0
+    fail_msg: Set a supported target profile and one or more existing domain principals.
+
+- name: Add declared principals to the DC RDP group
+  ansible.windows.win_powershell:
+    parameters:
+      Principals: "{{ ad_rdp_domain_controller_principals }}"
+      GroupName: "{{ ad_rdp_domain_controller_group }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $group = Get-ADGroup -Identity $GroupName -ErrorAction Stop
+      foreach ($principal in $Principals) {
+        $member = Get-ADObject -Identity $principal -ErrorAction Stop
+        if (-not (Get-ADGroupMember -Identity $group -Recursive | Where-Object DistinguishedName -eq $member.DistinguishedName)) {
+          Add-ADGroupMember -Identity $group -Members $member -ErrorAction Stop
+          $Ansible.Changed = $true
+        }
+      }
