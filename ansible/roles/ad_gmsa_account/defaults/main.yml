@@ -1,0 +1,6 @@
+---
+ad_gmsa_account_target_profile: windows-standard-2022
+ad_gmsa_account_name: ""
+ad_gmsa_account_dns_host_name: ""
+ad_gmsa_account_spns: []
+ad_gmsa_account_allowed_principals: []

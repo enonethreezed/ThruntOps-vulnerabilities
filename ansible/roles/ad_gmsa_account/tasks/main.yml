@@ -1,0 +1,23 @@
+---
+- name: Validate GMSA inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_gmsa_account_target_profile in ['windows-standard-2022', 'windows-modern-2025']
+      - ad_gmsa_account_name | length > 0
+      - ad_gmsa_account_dns_host_name | length > 0
+      - ad_gmsa_account_spns | length > 0
+      - ad_gmsa_account_allowed_principals | length > 0
+    fail_msg: Set a supported profile, name, DNS name, SPNs, and authorized principals.
+
+- name: Verify KDS and create the declared GMSA
+  ansible.windows.win_powershell:
+    parameters:
+      Name: "{{ ad_gmsa_account_name }}"
+      DnsHostName: "{{ ad_gmsa_account_dns_host_name }}"
+      Spns: "{{ ad_gmsa_account_spns }}"
+      Principals: "{{ ad_gmsa_account_allowed_principals }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      if (-not (Get-KdsRootKey -ErrorAction Stop)) { throw 'A KDS root key is required before creating a GMSA.' }
+      if (-not (Get-ADServiceAccount -Identity $Name -ErrorAction SilentlyContinue)) { New-ADServiceAccount -Name $Name -DNSHostName $DnsHostName -ServicePrincipalNames $Spns -PrincipalsAllowedToRetrieveManagedPassword $Principals -ErrorAction Stop; $Ansible.Changed = $true }

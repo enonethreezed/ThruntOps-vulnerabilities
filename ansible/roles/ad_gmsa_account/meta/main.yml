@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_gmsa_account
+  author: ThruntOps-vulnerabilities
+  description: Create a declared group managed service account.
+  min_ansible_version: "2.12"
+dependencies: []
