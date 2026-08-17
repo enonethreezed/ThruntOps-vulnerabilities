@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "ThruntOps_vulnerabilities",
+  "project_id": "d656392d-818b-42ea-bac7-a50a9de8d67c"
+}
