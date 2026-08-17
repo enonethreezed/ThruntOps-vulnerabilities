@@ -1,0 +1,10 @@
+---
+- ansible.builtin.assert:
+    that: [ansible_os_family == 'Windows', windows_seimpersonate_privilege_principal | length > 0]
+    fail_msg: A Windows host and an explicit principal are required.
+  when: windows_seimpersonate_privilege_enabled | bool
+- ansible.windows.win_user_right:
+    name: SeImpersonatePrivilege
+    users: ["{{ windows_seimpersonate_privilege_principal }}"]
+    action: add
+  when: windows_seimpersonate_privilege_enabled | bool
