@@ -1,0 +1,4 @@
+---
+ad_unconstrained_delegation_enabled: false
+ad_unconstrained_delegation_target_profile: windows-legacy-2016
+ad_unconstrained_delegation_computer: ''
