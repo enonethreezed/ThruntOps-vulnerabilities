@@ -1,0 +1,4 @@
+---
+adcs_esc3_enrollment_agent_enabled: false
+adcs_esc3_enrollment_agent_target_profile: windows-standard-2022
+adcs_esc3_enrollment_agent_template_dn: ''

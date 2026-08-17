@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: adcs_esc3_enrollment_agent, author: ThruntOps-vulnerabilities, description: ADCS template lab condition, min_ansible_version: '2.12' }
+dependencies: []
