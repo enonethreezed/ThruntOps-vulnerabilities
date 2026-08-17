@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_reset_password_delegation
+  author: ThruntOps-vulnerabilities
+  description: Delegate password reset on a declared AD object.
+  min_ansible_version: "2.12"
+dependencies: []

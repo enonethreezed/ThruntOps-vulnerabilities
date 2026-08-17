@@ -1,0 +1,21 @@
+---
+- name: Validate password reset delegation inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_reset_password_delegation_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_reset_password_delegation_principal | length > 0
+      - ad_reset_password_delegation_target_dn | length > 0
+    fail_msg: Set a supported profile, existing principal, and target distinguished name.
+
+- name: Delegate reset password extended right
+  ansible.windows.win_powershell:
+    parameters:
+      Principal: "{{ ad_reset_password_delegation_principal }}"
+      TargetDn: "{{ ad_reset_password_delegation_target_dn }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $sid = (Get-ADObject -Identity $Principal -ErrorAction Stop).SID
+      $acl = Get-Acl "AD:$TargetDn"
+      $guid = [guid]'00299570-246d-11d0-a768-00aa006e0529'
+      if (-not ($acl.Access | Where-Object { $_.IdentityReference -eq $sid -and $_.ObjectType -eq $guid -and $_.ActiveDirectoryRights.HasFlag([System.DirectoryServices.ActiveDirectoryRights]::ExtendedRight) })) { $acl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule($sid, 'ExtendedRight', 'Allow', $guid))); Set-Acl -Path "AD:$TargetDn" -AclObject $acl; $Ansible.Changed = $true }
