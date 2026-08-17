@@ -1,0 +1,19 @@
+---
+- name: Validate sudo scenario entries
+  ansible.builtin.assert:
+    that:
+      - item.user is defined
+      - item.command is defined
+      - item.command is match('^/')
+    fail_msg: "Each sudo entry requires a user and an absolute command path."
+  loop: "{{ linux_gtfobins_sudo_entries }}"
+
+- name: Install lab sudo rules
+  ansible.builtin.template:
+    src: gtfobins-sudoers.j2
+    dest: /etc/sudoers.d/gtfobins-lab
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "/usr/sbin/visudo -cf %s"
+  when: linux_gtfobins_sudo_entries | length > 0

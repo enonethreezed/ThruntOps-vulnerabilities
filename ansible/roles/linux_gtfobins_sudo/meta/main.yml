@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  role_name: linux_gtfobins_sudo
+  author: ThruntOps-vulnerabilities
+  description: Configure explicit sudo rules for Linux lab scenarios.
+  min_ansible_version: "2.12"
