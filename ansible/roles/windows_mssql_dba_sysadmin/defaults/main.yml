@@ -1,0 +1,5 @@
+---
+windows_mssql_dba_sysadmin_enabled: false
+windows_mssql_dba_sysadmin_target_profile: windows-standard-2022
+windows_mssql_dba_sysadmin_instance: ''
+windows_mssql_dba_sysadmin_query: ''
