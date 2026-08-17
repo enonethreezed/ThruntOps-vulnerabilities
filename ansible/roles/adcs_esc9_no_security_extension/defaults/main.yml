@@ -1,0 +1,4 @@
+---
+adcs_esc9_no_security_extension_enabled: false
+adcs_esc9_no_security_extension_target_profile: windows-standard-2022
+adcs_esc9_no_security_extension_template_dn: ''
