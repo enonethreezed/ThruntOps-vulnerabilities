@@ -1,0 +1,3 @@
+---
+windows_disable_firewall_enabled: false
+windows_disable_firewall_target_profile: windows-standard-2022
