@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_smb_backup_share_enabled }}", lab_target_profile: "{{ windows_smb_backup_share_target_profile }}", lab_action: smb_backup_share, lab_target: "{{ windows_smb_backup_share_name }}", lab_required_feature: FS-FileServer, lab_required_service: LanmanServer, lab_principal: "{{ windows_smb_backup_share_principal }}", lab_value: '', lab_path: "{{ windows_smb_backup_share_path }}", lab_windows_features: [FS-FileServer], lab_no_log: false }

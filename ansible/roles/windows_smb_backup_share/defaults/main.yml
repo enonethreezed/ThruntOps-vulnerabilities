@@ -1,0 +1,6 @@
+---
+windows_smb_backup_share_enabled: false
+windows_smb_backup_share_target_profile: windows-standard-2022
+windows_smb_backup_share_name: ''
+windows_smb_backup_share_path: ''
+windows_smb_backup_share_principal: ''
