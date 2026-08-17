@@ -1,0 +1,26 @@
+---
+- name: Validate BadSuccessor compatibility policy
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - windows_badsuccessor_vulnerable_target_profile == 'windows-modern-2025'
+      - windows_badsuccessor_vulnerable_min_build | int > 0
+      - windows_badsuccessor_vulnerable_max_build | int >= windows_badsuccessor_vulnerable_min_build | int
+    fail_msg: Declare an explicit eligible Server 2025 build range; this role fails closed by default.
+
+- name: Verify the selected Server 2025 build and patch state
+  ansible.windows.win_powershell:
+    parameters:
+      MinBuild: "{{ windows_badsuccessor_vulnerable_min_build }}"
+      MaxBuild: "{{ windows_badsuccessor_vulnerable_max_build }}"
+      BlockedKbs: "{{ windows_badsuccessor_vulnerable_blocked_kbs }}"
+    script: |
+      $os = Get-CimInstance Win32_OperatingSystem
+      if ($os.Caption -notmatch 'Server 2025') { throw 'BadSuccessor compatibility validation requires Windows Server 2025.' }
+      $build = [int]$os.BuildNumber
+      if ($build -lt [int]$MinBuild -or $build -gt [int]$MaxBuild) { throw "Build $build is outside the explicitly declared eligible range." }
+      $installed = @(Get-HotFix -ErrorAction Stop | ForEach-Object HotFixID)
+      $blocked = @($BlockedKbs | Where-Object { $installed -contains $_ })
+      if ($blocked.Count -gt 0) { throw "Mitigating update(s) detected: $($blocked -join ', ')." }
+      $Ansible.Result = @{ eligible = $true; build = $build }
+      $Ansible.Changed = $false

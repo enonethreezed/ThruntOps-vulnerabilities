@@ -1,0 +1,5 @@
+---
+windows_badsuccessor_vulnerable_target_profile: windows-modern-2025
+windows_badsuccessor_vulnerable_min_build: 0
+windows_badsuccessor_vulnerable_max_build: 0
+windows_badsuccessor_vulnerable_blocked_kbs: []
