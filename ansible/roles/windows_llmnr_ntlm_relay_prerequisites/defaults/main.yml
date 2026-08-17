@@ -1,0 +1,4 @@
+---
+windows_llmnr_ntlm_relay_prerequisites_enabled: false
+windows_llmnr_ntlm_relay_prerequisites_target_profile: windows-legacy-2016
+windows_llmnr_ntlm_relay_prerequisites_host: ''

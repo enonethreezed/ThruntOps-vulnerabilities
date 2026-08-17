@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_llmnr_ntlm_relay_prerequisites_enabled }}", lab_target_profile: "{{ windows_llmnr_ntlm_relay_prerequisites_target_profile }}", lab_action: llmnr_enabled, lab_target: "{{ windows_llmnr_ntlm_relay_prerequisites_host }}", lab_required_feature: '', lab_required_service: '', lab_principal: '', lab_value: '', lab_path: '', lab_windows_features: [], lab_no_log: false }
