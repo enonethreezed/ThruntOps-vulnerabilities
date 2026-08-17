@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: gitlab_source_exposure, author: ThruntOps-vulnerabilities, description: GitLab project visibility lab condition, min_ansible_version: '2.12' }
+dependencies: []

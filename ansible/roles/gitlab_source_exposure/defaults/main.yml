@@ -1,0 +1,6 @@
+---
+gitlab_source_exposure_enabled: false
+gitlab_source_exposure_url: ''
+gitlab_source_exposure_token: ''
+gitlab_source_exposure_project: ''
+gitlab_source_exposure_visibility: internal
