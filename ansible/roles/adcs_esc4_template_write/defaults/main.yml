@@ -1,0 +1,5 @@
+---
+adcs_esc4_template_write_enabled: false
+adcs_esc4_template_write_target_profile: windows-standard-2022
+adcs_esc4_template_write_template_dn: ''
+adcs_esc4_template_write_principal: ''
