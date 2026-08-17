@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: windows_smb_insecure_guest_auth, author: ThruntOps-vulnerabilities, description: Declared SMB guest lab policy, min_ansible_version: '2.12' }
+dependencies: []
