@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  role_name: linux_gtfobins_privilege_escalation
+  author: ThruntOps-vulnerabilities
+  description: Configure explicit GTFOBins privilege-escalation states.
+  min_ansible_version: "2.12"

@@ -1,0 +1,3 @@
+{% for item in linux_gtfobins_privilege_escalation_entries %}
+{{ item.user }} ALL=({{ item.runas | default('root') }}) {{ 'NOPASSWD: ' if item.nopasswd | default(true) else '' }}{{ item.command }}{{ item.arguments | default('') }}
+{% endfor %}
