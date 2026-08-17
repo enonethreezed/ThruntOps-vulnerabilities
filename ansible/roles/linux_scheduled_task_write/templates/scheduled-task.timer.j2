@@ -1,0 +1,10 @@
+[Unit]
+Description=Lab timer {{ item.name | default(item.unit_name) }}
+
+[Timer]
+OnCalendar={{ item.on_calendar | default('*-*-* *:*:00') }}
+Persistent=true
+Unit={{ item.unit_name }}.service
+
+[Install]
+WantedBy=timers.target

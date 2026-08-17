@@ -1,0 +1,7 @@
+[Unit]
+Description=Lab scheduled task {{ item.name | default(item.unit_name) }}
+
+[Service]
+Type=oneshot
+User=root
+ExecStart={{ item.path }}

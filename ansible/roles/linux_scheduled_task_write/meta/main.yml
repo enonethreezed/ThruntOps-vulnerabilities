@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  role_name: linux_scheduled_task_write
+  author: ThruntOps-vulnerabilities
+  description: Configure writable scripts executed by root scheduling services.
+  min_ansible_version: "2.12"

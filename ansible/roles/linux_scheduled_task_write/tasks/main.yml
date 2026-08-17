@@ -1,0 +1,64 @@
+---
+- name: Validate scheduled-task entries
+  ansible.builtin.assert:
+    that:
+      - item.path is defined
+      - item.content is defined
+      - item.kind | default('cron') in ['cron', 'systemd_timer']
+      - item.writable_user is defined
+      - item.kind | default('cron') == 'cron' or item.unit_name is defined
+    fail_msg: "Scheduled entries require path, content, kind, and writable_user."
+  loop: "{{ linux_scheduled_task_write_entries }}"
+
+- name: Create writable scheduled scripts
+  ansible.builtin.copy:
+    content: "{{ item.content }}"
+    dest: "{{ item.path }}"
+    owner: "{{ item.writable_user }}"
+    group: "{{ item.writable_group | default(item.writable_user) }}"
+    mode: "{{ item.mode | default('0770') }}"
+  loop: "{{ linux_scheduled_task_write_entries }}"
+
+- name: Configure root cron jobs
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    user: root
+    minute: "{{ item.minute | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    day: "{{ item.day | default('*') }}"
+    month: "{{ item.month | default('*') }}"
+    weekday: "{{ item.weekday | default('*') }}"
+    job: "{{ item.path }}"
+  loop: "{{ linux_scheduled_task_write_entries }}"
+  when: item.kind | default('cron') == 'cron'
+
+- name: Install root systemd service units
+  ansible.builtin.template:
+    src: scheduled-task.service.j2
+    dest: "/etc/systemd/system/{{ item.unit_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ linux_scheduled_task_write_entries }}"
+  when: item.kind | default('cron') == 'systemd_timer'
+  notify: Reload systemd
+
+- name: Install root systemd timer units
+  ansible.builtin.template:
+    src: scheduled-task.timer.j2
+    dest: "/etc/systemd/system/{{ item.unit_name }}.timer"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ linux_scheduled_task_write_entries }}"
+  when: item.kind | default('cron') == 'systemd_timer'
+  notify: Reload systemd
+
+- name: Enable root systemd timers
+  ansible.builtin.systemd:
+    name: "{{ item.unit_name }}.timer"
+    enabled: true
+    state: started
+    daemon_reload: false
+  loop: "{{ linux_scheduled_task_write_entries }}"
+  when: item.kind | default('cron') == 'systemd_timer'
