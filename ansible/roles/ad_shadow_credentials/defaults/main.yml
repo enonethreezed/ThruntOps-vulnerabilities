@@ -1,0 +1,5 @@
+---
+ad_shadow_credentials_enabled: false
+ad_shadow_credentials_target_profile: windows-standard-2022
+ad_shadow_credentials_target_dn: ''
+ad_shadow_credentials_principal: ''
