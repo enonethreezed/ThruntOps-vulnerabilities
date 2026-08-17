@@ -1,0 +1,20 @@
+---
+- name: Require credential-reuse variables
+  ansible.builtin.assert:
+    that:
+      - ad_credential_reuse_target_user | length > 0
+      - ad_credential_reuse_password | length > 0
+    fail_msg: "Set ad_credential_reuse_target_user and ad_credential_reuse_password."
+
+- name: Set the declared shared lab password
+  ansible.windows.win_powershell:
+    parameters:
+      TargetUser: "{{ ad_credential_reuse_target_user }}"
+      Password: "{{ ad_credential_reuse_password }}"
+    script: |
+      Import-Module ActiveDirectory
+      $user = Get-ADUser -Identity $TargetUser -ErrorAction Stop
+      $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+      Set-ADAccountPassword -Identity $user -Reset -NewPassword $securePassword -ErrorAction Stop
+      $Ansible.Changed = $true
+  no_log: true

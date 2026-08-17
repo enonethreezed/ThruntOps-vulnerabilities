@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_credential_reuse
+  author: ThruntOps-vulnerabilities
+  description: Assign a declared shared lab password to an AD user.
+  min_ansible_version: "2.12"
+dependencies: []
