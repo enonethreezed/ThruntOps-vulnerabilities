@@ -1,0 +1,6 @@
+---
+windows_webapp_sqli_enabled: false
+windows_webapp_sqli_target_profile: windows-standard-2022
+windows_webapp_sqli_site: ''
+windows_webapp_sqli_setting: ''
+windows_webapp_sqli_value: ''
