@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: windows_mssql_impersonation, author: ThruntOps-vulnerabilities, description: MSSQL impersonation lab condition, min_ansible_version: '2.12' }
+dependencies: []

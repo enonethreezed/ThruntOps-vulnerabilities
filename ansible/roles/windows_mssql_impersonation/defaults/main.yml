@@ -1,0 +1,5 @@
+---
+windows_mssql_impersonation_enabled: false
+windows_mssql_impersonation_target_profile: windows-standard-2022
+windows_mssql_impersonation_instance: ''
+windows_mssql_impersonation_query: ''
