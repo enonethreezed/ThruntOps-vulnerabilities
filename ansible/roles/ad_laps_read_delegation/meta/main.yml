@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_laps_read_delegation
+  author: ThruntOps-vulnerabilities
+  description: Delegate LAPS password attribute reads on a declared AD object.
+  min_ansible_version: "2.12"
+dependencies: []
