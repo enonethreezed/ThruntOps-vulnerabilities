@@ -1,0 +1,27 @@
+---
+- name: Validate dMSA baseline inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - windows_dmsa_baseline_target_profile == 'windows-modern-2025'
+      - windows_dmsa_baseline_name | length > 0
+      - windows_dmsa_baseline_dns_host_name | length > 0
+      - windows_dmsa_baseline_spns | length > 0
+      - windows_dmsa_baseline_allowed_principals | length > 0
+    fail_msg: dMSA roles require the modern 2025 profile and all declared account inputs.
+
+- name: Verify Server 2025 dMSA support and create the declared account
+  ansible.windows.win_powershell:
+    parameters:
+      Name: "{{ windows_dmsa_baseline_name }}"
+      DnsHostName: "{{ windows_dmsa_baseline_dns_host_name }}"
+      Spns: "{{ windows_dmsa_baseline_spns }}"
+      Principals: "{{ windows_dmsa_baseline_allowed_principals }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $os = Get-CimInstance Win32_OperatingSystem
+      if ($os.Caption -notmatch 'Server 2025') { throw 'dMSA baseline requires Windows Server 2025.' }
+      if (-not (Get-KdsRootKey -ErrorAction Stop)) { throw 'A KDS root key is required.' }
+      $command = Get-Command New-ADServiceAccount -ErrorAction Stop
+      if ($command.Parameters.Keys -notcontains 'CreateDelegatedServiceAccount') { throw 'The installed ActiveDirectory module does not support dMSA creation.' }
+      if (-not (Get-ADServiceAccount -Identity $Name -ErrorAction SilentlyContinue)) { New-ADServiceAccount -Name $Name -DNSHostName $DnsHostName -ServicePrincipalNames $Spns -PrincipalsAllowedToRetrieveManagedPassword $Principals -CreateDelegatedServiceAccount -ErrorAction Stop; $Ansible.Changed = $true }

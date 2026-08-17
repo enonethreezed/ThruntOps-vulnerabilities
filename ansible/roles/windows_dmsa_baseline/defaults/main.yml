@@ -1,0 +1,6 @@
+---
+windows_dmsa_baseline_target_profile: windows-modern-2025
+windows_dmsa_baseline_name: ""
+windows_dmsa_baseline_dns_host_name: ""
+windows_dmsa_baseline_spns: []
+windows_dmsa_baseline_allowed_principals: []
