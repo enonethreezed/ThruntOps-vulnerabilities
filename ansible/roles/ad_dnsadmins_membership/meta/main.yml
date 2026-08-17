@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_dnsadmins_membership
+  author: ThruntOps-vulnerabilities
+  description: Add declared principals to DnsAdmins.
+  min_ansible_version: "2.12"
+dependencies: []

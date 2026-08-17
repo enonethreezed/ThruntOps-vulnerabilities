@@ -1,0 +1,20 @@
+---
+- name: Validate DnsAdmins role inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_dnsadmins_membership_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_dnsadmins_membership_principals | length > 0
+    fail_msg: Set a supported profile and existing domain principals.
+
+- name: Add declared principals to DnsAdmins
+  ansible.windows.win_powershell:
+    parameters:
+      Principals: "{{ ad_dnsadmins_membership_principals }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $group = Get-ADGroup -Identity 'DnsAdmins' -ErrorAction Stop
+      foreach ($name in $Principals) {
+        $member = Get-ADObject -Identity $name -ErrorAction Stop
+        if (-not (Get-ADGroupMember -Identity $group | Where-Object DistinguishedName -eq $member.DistinguishedName)) { Add-ADGroupMember -Identity $group -Members $member; $Ansible.Changed = $true }
+      }
