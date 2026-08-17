@@ -1,0 +1,5 @@
+---
+adcs_esc14_altsecurityidentities_enabled: false
+adcs_esc14_altsecurityidentities_target_profile: windows-standard-2022
+adcs_esc14_altsecurityidentities_target_dn: ''
+adcs_esc14_altsecurityidentities_principal: ''
