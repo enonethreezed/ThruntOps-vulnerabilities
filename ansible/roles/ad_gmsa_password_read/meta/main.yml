@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_gmsa_password_read
+  author: ThruntOps-vulnerabilities
+  description: Add declared principals to GMSA password retrieval access.
+  min_ansible_version: "2.12"
+dependencies: []

@@ -1,0 +1,21 @@
+---
+- name: Validate GMSA password-read inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_gmsa_password_read_target_profile in ['windows-standard-2022', 'windows-modern-2025']
+      - ad_gmsa_password_read_name | length > 0
+      - ad_gmsa_password_read_principals | length > 0
+    fail_msg: Set a supported profile, an existing GMSA, and existing principals.
+
+- name: Add declared principals to GMSA password retrieval access
+  ansible.windows.win_powershell:
+    parameters:
+      Name: "{{ ad_gmsa_password_read_name }}"
+      Principals: "{{ ad_gmsa_password_read_principals }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $account = Get-ADServiceAccount -Identity $Name -Properties PrincipalsAllowedToRetrieveManagedPassword -ErrorAction Stop
+      $current = @($account.PrincipalsAllowedToRetrieveManagedPassword)
+      foreach ($principal in $Principals) { Get-ADObject -Identity $principal -ErrorAction Stop | Out-Null; if ($current -notcontains $principal) { $current += $principal; $Ansible.Changed = $true } }
+      if ($Ansible.Changed) { Set-ADServiceAccount -Identity $account -PrincipalsAllowedToRetrieveManagedPassword $current -ErrorAction Stop }
