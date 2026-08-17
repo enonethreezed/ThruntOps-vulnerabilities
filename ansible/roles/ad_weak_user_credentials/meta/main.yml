@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_weak_user_credentials
+  author: ThruntOps-vulnerabilities
+  description: Create declared lab users with declared credentials.
+  min_ansible_version: "2.12"
+dependencies: []

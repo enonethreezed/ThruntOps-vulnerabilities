@@ -1,0 +1,25 @@
+---
+- name: Validate weak user credential inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_weak_user_credentials_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_weak_user_credentials_users | length > 0
+      - ad_weak_user_credentials_users | map(attribute='name') | select('defined') | list | length == ad_weak_user_credentials_users | length
+      - ad_weak_user_credentials_users | map(attribute='password') | select('defined') | list | length == ad_weak_user_credentials_users | length
+    fail_msg: Each user requires name and password fields.
+
+- name: Create declared lab users when absent
+  ansible.windows.win_powershell:
+    parameters:
+      Users: "{{ ad_weak_user_credentials_users }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      foreach ($entry in $Users) {
+        if (-not (Get-ADUser -Filter "SamAccountName -eq '$($entry.name)'" -ErrorAction Stop)) {
+          $password = ConvertTo-SecureString $entry.password -AsPlainText -Force
+          New-ADUser -Name $entry.name -SamAccountName $entry.name -AccountPassword $password -Enabled $true -ErrorAction Stop
+          $Ansible.Changed = $true
+        }
+      }
+  no_log: true
