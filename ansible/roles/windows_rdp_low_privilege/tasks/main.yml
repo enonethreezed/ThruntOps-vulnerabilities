@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_rdp_low_privilege_enabled }}", lab_target_profile: "{{ windows_rdp_low_privilege_target_profile }}", lab_action: rdp_member, lab_target: localhost, lab_required_feature: '', lab_required_service: TermService, lab_principal: "{{ windows_rdp_low_privilege_principal }}", lab_value: '', lab_path: '', lab_windows_features: [], lab_no_log: false }
