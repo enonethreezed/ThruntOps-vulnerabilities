@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_mssql_xp_cmdshell_enabled }}", lab_target_profile: "{{ windows_mssql_xp_cmdshell_target_profile }}", lab_action: mssql_query, lab_target: "{{ windows_mssql_xp_cmdshell_instance }}", lab_required_feature: '', lab_required_service: MSSQLSERVER, lab_principal: '', lab_value: "{{ windows_mssql_xp_cmdshell_query }}", lab_path: '', lab_windows_features: [], lab_no_log: true }

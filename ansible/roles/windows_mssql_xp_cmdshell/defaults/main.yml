@@ -1,0 +1,5 @@
+---
+windows_mssql_xp_cmdshell_enabled: false
+windows_mssql_xp_cmdshell_target_profile: windows-standard-2022
+windows_mssql_xp_cmdshell_instance: ''
+windows_mssql_xp_cmdshell_query: ''
