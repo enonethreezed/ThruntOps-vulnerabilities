@@ -1,0 +1,22 @@
+---
+- name: Validate GitLab lab secret inputs
+  ansible.builtin.assert:
+    that:
+      - gitlab_hardcoded_secrets_url is match('^https?://')
+      - gitlab_hardcoded_secrets_token | length > 0
+      - gitlab_hardcoded_secrets_project | string | length > 0
+      - gitlab_hardcoded_secrets_file_path | length > 0
+      - gitlab_hardcoded_secrets_content | length > 0
+    fail_msg: Set the GitLab URL, API token, project, CI file path, and lab-only content outside version control.
+  when: gitlab_hardcoded_secrets_enabled | bool
+
+- name: Write declared lab-only CI content
+  ansible.builtin.uri:
+    url: "{{ gitlab_hardcoded_secrets_url }}/api/v4/projects/{{ gitlab_hardcoded_secrets_project }}/repository/files/{{ gitlab_hardcoded_secrets_file_path | urlencode }}"
+    method: PUT
+    headers: { PRIVATE-TOKEN: "{{ gitlab_hardcoded_secrets_token }}" }
+    body_format: json
+    body: { branch: "{{ gitlab_hardcoded_secrets_branch }}", content: "{{ gitlab_hardcoded_secrets_content }}", commit_message: 'Configure lab-only CI content' }
+    status_code: 200
+  no_log: true
+  when: gitlab_hardcoded_secrets_enabled | bool

@@ -1,0 +1,8 @@
+---
+gitlab_hardcoded_secrets_enabled: false
+gitlab_hardcoded_secrets_url: ''
+gitlab_hardcoded_secrets_token: ''
+gitlab_hardcoded_secrets_project: ''
+gitlab_hardcoded_secrets_file_path: ''
+gitlab_hardcoded_secrets_content: ''
+gitlab_hardcoded_secrets_branch: main
