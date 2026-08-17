@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ adcs_esc5_pki_object_control_enabled }}", lab_target_profile: "{{ adcs_esc5_pki_object_control_target_profile }}", lab_action: adcs_acl, lab_target: "{{ adcs_esc5_pki_object_control_target_dn }}", lab_required_feature: ADCS-Cert-Authority, lab_required_service: CertSvc, lab_principal: "{{ adcs_esc5_pki_object_control_principal }}", lab_value: '', lab_path: '', lab_windows_features: [ADCS-Cert-Authority], lab_no_log: false }

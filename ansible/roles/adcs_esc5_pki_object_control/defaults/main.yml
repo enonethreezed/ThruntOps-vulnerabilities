@@ -1,0 +1,5 @@
+---
+adcs_esc5_pki_object_control_enabled: false
+adcs_esc5_pki_object_control_target_profile: windows-standard-2022
+adcs_esc5_pki_object_control_target_dn: ''
+adcs_esc5_pki_object_control_principal: ''
