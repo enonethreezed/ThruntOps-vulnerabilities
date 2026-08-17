@@ -1,0 +1,4 @@
+---
+adcs_esc11_rpc_relay_enabled: false
+adcs_esc11_rpc_relay_target_profile: windows-standard-2022
+adcs_esc11_rpc_relay_ca: ''
