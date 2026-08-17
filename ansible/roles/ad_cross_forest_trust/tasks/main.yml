@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ ad_cross_forest_trust_enabled }}", lab_target_profile: "{{ ad_cross_forest_trust_target_profile }}", lab_action: ad_cross_forest_group, lab_target: "{{ ad_cross_forest_trust_domain }}", lab_required_feature: AD-Domain-Services, lab_required_service: ADWS, lab_principal: "{{ ad_cross_forest_trust_group }}", lab_value: "{{ ad_cross_forest_trust_member_dn }}", lab_path: '', lab_windows_features: [AD-Domain-Services], lab_no_log: false }

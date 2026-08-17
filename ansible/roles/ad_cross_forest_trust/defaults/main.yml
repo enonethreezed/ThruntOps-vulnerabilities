@@ -1,0 +1,6 @@
+---
+ad_cross_forest_trust_enabled: false
+ad_cross_forest_trust_target_profile: windows-standard-2022
+ad_cross_forest_trust_domain: ''
+ad_cross_forest_trust_group: ''
+ad_cross_forest_trust_member_dn: ''
