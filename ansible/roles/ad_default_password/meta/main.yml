@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_default_password
+  author: ThruntOps-vulnerabilities
+  description: Set a declared lab password for existing AD users.
+  min_ansible_version: "2.12"
+dependencies: []

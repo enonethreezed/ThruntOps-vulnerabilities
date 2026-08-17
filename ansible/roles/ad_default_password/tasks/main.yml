@@ -1,0 +1,20 @@
+---
+- name: Validate default password inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_default_password_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_default_password_users | length > 0
+      - ad_default_password_value | length > 0
+    fail_msg: Set a supported profile, existing users, and a lab-only password.
+
+- name: Set the declared password for each user
+  ansible.windows.win_powershell:
+    parameters:
+      Users: "{{ ad_default_password_users }}"
+      Password: "{{ ad_default_password_value }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $secure = ConvertTo-SecureString $Password -AsPlainText -Force
+      foreach ($name in $Users) { Set-ADAccountPassword -Identity (Get-ADUser -Identity $name -ErrorAction Stop) -Reset -NewPassword $secure; $Ansible.Changed = $true }
+  no_log: true
