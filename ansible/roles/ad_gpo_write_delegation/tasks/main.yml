@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ ad_gpo_write_delegation_enabled }}", lab_target_profile: "{{ ad_gpo_write_delegation_target_profile }}", lab_action: ad_gpo_acl, lab_target: "{{ ad_gpo_write_delegation_gpo_guid }}", lab_required_feature: GPMC, lab_required_service: '', lab_principal: "{{ ad_gpo_write_delegation_principal }}", lab_value: '', lab_path: '', lab_windows_features: [GPMC], lab_no_log: false }

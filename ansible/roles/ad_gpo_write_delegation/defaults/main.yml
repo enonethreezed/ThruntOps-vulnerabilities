@@ -1,0 +1,5 @@
+---
+ad_gpo_write_delegation_enabled: false
+ad_gpo_write_delegation_target_profile: windows-standard-2022
+ad_gpo_write_delegation_gpo_guid: ''
+ad_gpo_write_delegation_principal: ''
