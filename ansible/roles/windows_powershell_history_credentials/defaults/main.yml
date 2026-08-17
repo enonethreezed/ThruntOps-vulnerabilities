@@ -1,0 +1,5 @@
+---
+windows_powershell_history_credentials_enabled: false
+windows_powershell_history_credentials_target_profile: windows-standard-2022
+windows_powershell_history_credentials_path: ''
+windows_powershell_history_credentials_value: ''
