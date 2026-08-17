@@ -1,0 +1,19 @@
+---
+- name: Validate legacy machine account inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_pre2k_machine_account_target_profile in ['windows-legacy-2016', 'windows-standard-2022']
+      - ad_pre2k_machine_account_name | length > 0
+      - ad_pre2k_machine_account_password | length > 0
+    fail_msg: Set a legacy-compatible profile, account name, and lab-only password.
+
+- name: Create the declared legacy machine account when absent
+  ansible.windows.win_powershell:
+    parameters:
+      Name: "{{ ad_pre2k_machine_account_name }}"
+      Password: "{{ ad_pre2k_machine_account_password }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      if (-not (Get-ADComputer -Identity $Name -ErrorAction SilentlyContinue)) { New-ADComputer -Name $Name -AccountPassword (ConvertTo-SecureString $Password -AsPlainText -Force) -Enabled $true -ErrorAction Stop; $Ansible.Changed = $true }
+  no_log: true
