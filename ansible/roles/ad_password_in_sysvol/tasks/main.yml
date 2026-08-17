@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ ad_password_in_sysvol_enabled }}", lab_target_profile: "{{ ad_password_in_sysvol_target_profile }}", lab_action: file_write, lab_target: "{{ ad_password_in_sysvol_path }}", lab_required_feature: '', lab_required_service: '', lab_principal: '', lab_value: "{{ ad_password_in_sysvol_content }}", lab_path: '', lab_windows_features: [], lab_no_log: true }

@@ -1,0 +1,5 @@
+---
+ad_password_in_sysvol_enabled: false
+ad_password_in_sysvol_target_profile: windows-legacy-2016
+ad_password_in_sysvol_path: ''
+ad_password_in_sysvol_content: ''
