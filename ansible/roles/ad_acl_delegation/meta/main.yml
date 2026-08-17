@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_acl_delegation
+  author: ThruntOps-vulnerabilities
+  description: Delegate explicitly declared AD rights on an AD object.
+  min_ansible_version: "2.12"
+dependencies: []
