@@ -7,3 +7,4 @@ environments.
 
 - [ThruntOps vulnerability catalog](https://enonethreezed.github.io/ThruntOps/vulnerabilities.html)
 - [vulnerable-AD source repository](https://github.com/wazehell/vulnerable-AD)
+- [pwnable CTF source repository](https://github.com/enonethreezed/pwnable)
