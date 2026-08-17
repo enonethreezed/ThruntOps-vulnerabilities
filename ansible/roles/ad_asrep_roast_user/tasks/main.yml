@@ -1,0 +1,19 @@
+---
+- name: Validate AS-REP user inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_asrep_roast_user_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_asrep_roast_user_users | length > 0
+    fail_msg: Set a supported profile and existing users.
+
+- name: Disable pre-authentication for declared users
+  ansible.windows.win_powershell:
+    parameters:
+      Users: "{{ ad_asrep_roast_user_users }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      foreach ($name in $Users) {
+        $user = Get-ADUser -Identity $name -Properties DoesNotRequirePreAuth -ErrorAction Stop
+        if (-not $user.DoesNotRequirePreAuth) { Set-ADAccountControl -Identity $user -DoesNotRequirePreAuth $true; $Ansible.Changed = $true }
+      }

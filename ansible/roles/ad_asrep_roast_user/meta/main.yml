@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_asrep_roast_user
+  author: ThruntOps-vulnerabilities
+  description: Disable Kerberos pre-authentication for declared AD users.
+  min_ansible_version: "2.12"
+dependencies: []
