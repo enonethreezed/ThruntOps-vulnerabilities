@@ -1,0 +1,64 @@
+---
+- name: Validate Windows lab role inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - lab_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - lab_action | length > 0
+      - lab_required_feature | length == 0 or lab_required_feature in lab_windows_features
+      - lab_target | length > 0
+      - lab_action not in ['file_write', 'mssql_query', 'ad_attribute', 'ad_cross_forest_group', 'registry_value'] or lab_value | length > 0
+      - lab_action not in ['ad_acl', 'ad_gpo_acl', 'ad_cross_forest_group'] or lab_principal | length > 0
+      - lab_action != 'iis_setting' or (lab_principal | length > 0 and lab_value | length > 0)
+    fail_msg: This role requires its declared Windows profile, target, and prerequisite feature.
+  when: lab_enabled | bool
+
+- name: Check required Windows feature or service
+  ansible.windows.win_powershell:
+    parameters:
+      Feature: "{{ lab_required_feature }}"
+      Service: "{{ lab_required_service }}"
+    script: |
+      if ($Feature) { if (-not (Get-WindowsFeature -Name $Feature -ErrorAction SilentlyContinue | Where-Object Installed)) { throw "Required feature $Feature is not installed" } }
+      if ($Service) { if (-not (Get-Service -Name $Service -ErrorAction SilentlyContinue)) { throw "Required service $Service is unavailable" } }
+  changed_when: false
+  when: lab_enabled | bool and (lab_required_feature | length > 0 or lab_required_service | length > 0)
+
+- name: Apply declared Windows lab condition
+  ansible.windows.win_powershell:
+    parameters:
+      Action: "{{ lab_action }}"
+      Target: "{{ lab_target }}"
+      Principal: "{{ lab_principal }}"
+      Value: "{{ lab_value }}"
+      Path: "{{ lab_path }}"
+    script: |
+      $changed = $false
+      switch ($Action) {
+        'defender_disabled' { $before=(Get-MpPreference).DisableRealtimeMonitoring; if (-not $before) { Set-MpPreference -DisableRealtimeMonitoring $true; $changed=$true } }
+        'firewall_disabled' { Get-NetFirewallProfile | ForEach-Object { if ($_.Enabled) { Set-NetFirewallProfile -Name $_.Name -Enabled False; $changed=$true } } }
+        'updates_disabled' { $p='HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'; if ((Get-ItemProperty -Path $p -Name NoAutoUpdate -ErrorAction SilentlyContinue).NoAutoUpdate -ne 1) { New-Item -Path $p -Force | Out-Null; Set-ItemProperty -Path $p -Name NoAutoUpdate -Value 1; $changed=$true } }
+        'rdp_member' { Enable-NetFirewallRule -DisplayGroup 'Remote Desktop' | Out-Null; if (-not (Get-LocalGroupMember -Group 'Remote Desktop Users' -Member $Principal -ErrorAction SilentlyContinue)) { Add-LocalGroupMember -Group 'Remote Desktop Users' -Member $Principal; $changed=$true } }
+        'se_impersonate' { throw 'Configure SeImpersonatePrivilege through an explicitly reviewed domain GPO; local mutation is intentionally not implicit.' }
+        'builtin_admin_password' { $u=Get-LocalUser -Name Administrator; if (-not $u.Enabled) { Enable-LocalUser -Name Administrator; $changed=$true }; if ($Value) { Set-LocalUser -Name Administrator -Password (ConvertTo-SecureString $Value -AsPlainText -Force); $changed=$true } }
+        'powershell_history' { $d=Split-Path $Path; New-Item -ItemType Directory -Path $d -Force | Out-Null; if (-not (Test-Path $Path) -or -not (Select-String -Path $Path -SimpleMatch -Quiet -Pattern $Value)) { Add-Content -Path $Path -Value $Value; $changed=$true } }
+        'smb_backup_share' { New-Item -ItemType Directory -Path $Path -Force | Out-Null; if (-not (Get-SmbShare -Name $Target -ErrorAction SilentlyContinue)) { New-SmbShare -Name $Target -Path $Path -ReadAccess $Principal | Out-Null; $changed=$true } }
+        'smb_guest' { $p='HKLM:\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation'; if ((Get-ItemProperty -Path $p -Name AllowInsecureGuestAuth -ErrorAction SilentlyContinue).AllowInsecureGuestAuth -ne 1) { New-Item -Path $p -Force | Out-Null; Set-ItemProperty -Path $p -Name AllowInsecureGuestAuth -Value 1; $changed=$true } }
+        'ad_unconstrained_delegation' { Import-Module ActiveDirectory; $o=Get-ADComputer -Identity $Target -Properties TrustedForDelegation; if (-not $o.TrustedForDelegation) { Set-ADAccountControl -Identity $o -TrustedForDelegation $true; $changed=$true } }
+        'ad_acl' { Import-Module ActiveDirectory; $acl=Get-Acl "AD:$Target"; $rule=New-Object DirectoryServices.ActiveDirectoryAccessRule((New-Object Security.Principal.NTAccount($Principal)),'GenericWrite','Allow'); if (-not ($acl.Access | Where-Object {$_.IdentityReference -eq $rule.IdentityReference -and $_.ActiveDirectoryRights -band $rule.ActiveDirectoryRights})) { $acl.AddAccessRule($rule); Set-Acl "AD:$Target" $acl; $changed=$true } }
+        'ad_gpo_acl' { Import-Module GroupPolicy; $p=Get-GPO -Guid $Target; Set-GPPermission -Guid $p.Id -TargetName $Principal -TargetType User -PermissionLevel GpoEditDeleteModifySecurity; $changed=$true }
+        'llmnr_enabled' { $p='HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient'; if ((Get-ItemProperty -Path $p -Name EnableMulticast -ErrorAction SilentlyContinue).EnableMulticast -ne 1) { New-Item -Path $p -Force | Out-Null; Set-ItemProperty -Path $p -Name EnableMulticast -Value 1; $changed=$true } }
+        'adcs_registry_flag' { $p="HKLM:\SYSTEM\CurrentControlSet\Services\CertSvc\Configuration\$Target"; $old=(Get-ItemProperty -Path $p -Name $Principal -ErrorAction Stop).$Principal; $new=[int]$Value; if ($old -ne $new) { Set-ItemProperty -Path $p -Name $Principal -Value $new; Restart-Service CertSvc; $changed=$true } }
+        'adcs_template_flag' { Import-Module ActiveDirectory; $o=Get-ADObject -Identity $Target -Properties $Principal; if ([int]$o.$Principal -ne [int]$Value) { Set-ADObject -Identity $o -Replace @{$Principal=[int]$Value}; $changed=$true } }
+        'adcs_acl' { Import-Module ActiveDirectory; $acl=Get-Acl "AD:$Target"; $rule=New-Object DirectoryServices.ActiveDirectoryAccessRule((New-Object Security.Principal.NTAccount($Principal)),'GenericWrite','Allow'); $acl.AddAccessRule($rule); Set-Acl "AD:$Target" $acl; $changed=$true }
+        'ad_attribute' { Import-Module ActiveDirectory; $o=Get-ADObject -Identity $Target -Properties $Principal; if ([string]$o.$Principal -ne $Value) { Set-ADObject -Identity $o -Replace @{$Principal=$Value}; $changed=$true } }
+        'ad_cross_forest_group' { Import-Module ActiveDirectory; if (-not (Get-ADTrust -Identity $Target -ErrorAction SilentlyContinue)) { throw "Trust $Target does not exist" }; $group=Get-ADGroup -Identity $Principal; if (-not (Get-ADGroupMember -Identity $group -Recursive | Where-Object DistinguishedName -eq $Value)) { Add-ADGroupMember -Identity $group -Members $Value; $changed=$true } }
+        'file_write' { $directory=Split-Path -Parent $Target; if (-not (Test-Path $directory)) { throw "Parent directory $directory does not exist" }; if (-not (Test-Path $Target) -or (Get-Content -Path $Target -Raw) -ne $Value) { Set-Content -Path $Target -Value $Value -NoNewline; $changed=$true } }
+        'registry_value' { if ((Get-ItemProperty -Path $Target -Name $Principal -ErrorAction SilentlyContinue).$Principal -ne $Value) { New-Item -Path $Target -Force | Out-Null; Set-ItemProperty -Path $Target -Name $Principal -Value $Value; $changed=$true } }
+        'iis_setting' { Import-Module WebAdministration; if (-not (Test-Path "IIS:\Sites\$Target")) { throw "IIS site $Target does not exist" }; Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location $Target -Filter "system.webServer/asp" -Name $Principal -Value $Value; $changed=$true }
+        'mssql_query' { if (-not (Get-Command Invoke-Sqlcmd -ErrorAction SilentlyContinue)) { throw 'SqlServer PowerShell module is required' }; Invoke-Sqlcmd -ServerInstance $Target -Query $Value; $changed=$true }
+        default { throw "Unsupported lab action $Action" }
+      }
+      $Ansible.Changed = $changed
+  no_log: "{{ lab_no_log | bool }}"
+  when: lab_enabled | bool

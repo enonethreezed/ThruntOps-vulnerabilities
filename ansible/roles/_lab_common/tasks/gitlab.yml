@@ -1,0 +1,27 @@
+---
+- name: Validate GitLab lab role inputs
+  ansible.builtin.assert:
+    that:
+      - lab_enabled | bool
+      - lab_gitlab_url is match('^https?://')
+      - lab_gitlab_token | length > 0
+      - lab_gitlab_project | string | length > 0
+    fail_msg: Set the GitLab URL, API token, and project ID outside version control.
+
+- name: Verify GitLab API availability
+  ansible.builtin.uri:
+    url: "{{ lab_gitlab_url }}/api/v4/version"
+    return_content: false
+    status_code: 200
+  changed_when: false
+
+- name: Apply declared GitLab project configuration
+  ansible.builtin.uri:
+    url: "{{ lab_gitlab_url }}/api/v4/projects/{{ lab_gitlab_project }}"
+    method: PUT
+    headers: { PRIVATE-TOKEN: "{{ lab_gitlab_token }}" }
+    body_format: json
+    body: "{{ lab_gitlab_settings }}"
+    status_code: 200
+  no_log: true
+  when: lab_gitlab_settings | length > 0

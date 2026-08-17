@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ adcs_esc12_issuance_policy_enabled }}", lab_target_profile: "{{ adcs_esc12_issuance_policy_target_profile }}", lab_action: ad_attribute, lab_target: "{{ adcs_esc12_issuance_policy_template_dn }}", lab_required_feature: ADCS-Cert-Authority, lab_required_service: CertSvc, lab_principal: msPKI-Certificate-Policy, lab_value: "{{ adcs_esc12_issuance_policy_oid }}", lab_path: '', lab_windows_features: [ADCS-Cert-Authority], lab_no_log: false }

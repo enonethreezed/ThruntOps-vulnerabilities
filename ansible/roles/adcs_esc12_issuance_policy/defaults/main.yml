@@ -1,0 +1,5 @@
+---
+adcs_esc12_issuance_policy_enabled: false
+adcs_esc12_issuance_policy_target_profile: windows-standard-2022
+adcs_esc12_issuance_policy_template_dn: ''
+adcs_esc12_issuance_policy_oid: ''
