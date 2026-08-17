@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ windows_builtin_admin_weak_password_enabled }}", lab_target_profile: "{{ windows_builtin_admin_weak_password_target_profile }}", lab_action: builtin_admin_password, lab_target: Administrator, lab_required_feature: '', lab_required_service: '', lab_principal: '', lab_value: "{{ windows_builtin_admin_weak_password_value }}", lab_path: '', lab_windows_features: [], lab_no_log: true }

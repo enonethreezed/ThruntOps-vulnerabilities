@@ -1,0 +1,4 @@
+---
+windows_builtin_admin_weak_password_enabled: false
+windows_builtin_admin_weak_password_target_profile: windows-standard-2022
+windows_builtin_admin_weak_password_value: ''

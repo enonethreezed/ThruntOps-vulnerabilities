@@ -1,0 +1,3 @@
+---
+galaxy_info: { role_name: windows_builtin_admin_weak_password, author: ThruntOps-vulnerabilities, description: Built-in Administrator lab account, min_ansible_version: '2.12' }
+dependencies: []
