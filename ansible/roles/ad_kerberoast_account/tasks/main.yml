@@ -1,0 +1,26 @@
+---
+- name: Validate service account inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_kerberoast_account_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_kerberoast_account_user | length > 0
+      - ad_kerberoast_account_password | length > 0
+      - ad_kerberoast_account_spns | length > 0
+    fail_msg: Set an existing user, a lab password, and one or more SPNs.
+
+- name: Set the service account password and SPNs
+  ansible.windows.win_powershell:
+    parameters:
+      UserName: "{{ ad_kerberoast_account_user }}"
+      Password: "{{ ad_kerberoast_account_password }}"
+      Spns: "{{ ad_kerberoast_account_spns }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $user = Get-ADUser -Identity $UserName -Properties ServicePrincipalName -ErrorAction Stop
+      $changed = $false
+      foreach ($spn in $Spns) { if ($user.ServicePrincipalName -notcontains $spn) { Set-ADUser -Identity $user -Add @{servicePrincipalName=$spn}; $changed = $true } }
+      $secure = ConvertTo-SecureString $Password -AsPlainText -Force
+      Set-ADAccountPassword -Identity $user -Reset -NewPassword $secure -ErrorAction Stop
+      $Ansible.Changed = $true
+  no_log: true
