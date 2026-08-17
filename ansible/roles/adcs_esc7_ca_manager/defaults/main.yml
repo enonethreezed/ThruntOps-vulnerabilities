@@ -1,0 +1,5 @@
+---
+adcs_esc7_ca_manager_enabled: false
+adcs_esc7_ca_manager_target_profile: windows-standard-2022
+adcs_esc7_ca_manager_ca_dn: ''
+adcs_esc7_ca_manager_principal: ''
