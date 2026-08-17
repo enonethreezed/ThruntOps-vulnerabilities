@@ -1,0 +1,26 @@
+---
+- name: Validate capability targets
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  loop: "{{ linux_gtfobins_capabilities_entries }}"
+  register: linux_gtfobins_capability_stats
+
+- name: Require existing capability targets
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isreg
+      - item.capability is match('^cap_[a-z0-9_,]+[+-][a-z]+$')
+    fail_msg: "Invalid capability target or capability specification."
+  loop: "{{ linux_gtfobins_capability_stats.results }}"
+
+- name: Read current file capabilities
+  ansible.builtin.command: "getcap {{ item.path }}"
+  loop: "{{ linux_gtfobins_capabilities_entries }}"
+  register: linux_gtfobins_current_capabilities
+  changed_when: false
+
+- name: Apply file capabilities
+  ansible.builtin.command: "setcap {{ item.item.capability }} {{ item.item.path }}"
+  loop: "{{ linux_gtfobins_current_capabilities.results }}"
+  when: item.stdout != item.item.path ~ ' = ' ~ item.item.capability
