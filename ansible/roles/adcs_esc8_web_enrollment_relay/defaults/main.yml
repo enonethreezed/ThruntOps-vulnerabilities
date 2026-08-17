@@ -1,0 +1,4 @@
+---
+adcs_esc8_web_enrollment_relay_enabled: false
+adcs_esc8_web_enrollment_relay_target_profile: windows-standard-2022
+adcs_esc8_web_enrollment_relay_site: ''

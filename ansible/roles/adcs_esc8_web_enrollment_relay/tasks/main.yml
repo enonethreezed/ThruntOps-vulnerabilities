@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: ../../_lab_common/tasks/windows.yml
+  vars: { lab_enabled: "{{ adcs_esc8_web_enrollment_relay_enabled }}", lab_target_profile: "{{ adcs_esc8_web_enrollment_relay_target_profile }}", lab_action: iis_setting, lab_target: "{{ adcs_esc8_web_enrollment_relay_site }}", lab_required_feature: ADCS-Web-Enrollment, lab_required_service: W3SVC, lab_principal: scriptErrorSentToBrowser, lab_value: 'true', lab_path: '', lab_windows_features: [ADCS-Web-Enrollment], lab_no_log: false }
