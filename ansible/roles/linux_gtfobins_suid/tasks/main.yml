@@ -1,0 +1,22 @@
+---
+- name: Validate SUID targets
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  loop: "{{ linux_gtfobins_suid_entries }}"
+  register: linux_gtfobins_suid_stats
+
+- name: Require existing SUID targets
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.isreg
+    fail_msg: "SUID target does not exist or is not a regular file: {{ item.item.path }}"
+  loop: "{{ linux_gtfobins_suid_stats.results }}"
+
+- name: Apply SUID modes
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('4755') }}"
+  loop: "{{ linux_gtfobins_suid_entries }}"

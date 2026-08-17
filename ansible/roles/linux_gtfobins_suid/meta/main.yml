@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  role_name: linux_gtfobins_suid
+  author: ThruntOps-vulnerabilities
+  description: Configure explicit SUID file modes for Linux lab scenarios.
+  min_ansible_version: "2.12"
