@@ -1,0 +1,4 @@
+---
+adcs_esc15_schema_v1_enabled: false
+adcs_esc15_schema_v1_target_profile: windows-standard-2022
+adcs_esc15_schema_v1_template_dn: ''
