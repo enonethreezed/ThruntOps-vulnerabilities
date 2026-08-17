@@ -1,0 +1,6 @@
+---
+windows_webapp_file_upload_enabled: false
+windows_webapp_file_upload_target_profile: windows-standard-2022
+windows_webapp_file_upload_site: ''
+windows_webapp_file_upload_setting: ''
+windows_webapp_file_upload_value: ''
