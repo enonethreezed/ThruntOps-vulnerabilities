@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ad_dcsync_delegation
+  author: ThruntOps-vulnerabilities
+  description: Delegate directory replication extended rights on the domain root.
+  min_ansible_version: "2.12"
+dependencies: []

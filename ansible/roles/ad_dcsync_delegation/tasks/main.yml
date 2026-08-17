@@ -1,0 +1,23 @@
+---
+- name: Validate directory replication delegation inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - ad_dcsync_delegation_target_profile in ['windows-legacy-2016', 'windows-standard-2022', 'windows-modern-2025']
+      - ad_dcsync_delegation_principal | length > 0
+    fail_msg: Set a supported profile and an existing domain principal.
+
+- name: Delegate required replication rights at the domain root
+  ansible.windows.win_powershell:
+    parameters:
+      Principal: "{{ ad_dcsync_delegation_principal }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      $sid = (Get-ADObject -Identity $Principal -ErrorAction Stop).SID
+      $domain = Get-ADDomain
+      $acl = Get-Acl "AD:$($domain.DistinguishedName)"
+      $guids = '1131f6aa-9c07-11d1-f79f-00c04fc2dcd2','1131f6ad-9c07-11d1-f79f-00c04fc2dcd2','89e95b76-444d-4c62-991a-0facbeda640c'
+      foreach ($guid in $guids) {
+        if (-not ($acl.Access | Where-Object { $_.IdentityReference -eq $sid -and $_.ObjectType -eq [guid]$guid -and $_.ActiveDirectoryRights.HasFlag([System.DirectoryServices.ActiveDirectoryRights]::ExtendedRight) })) { $acl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule($sid, 'ExtendedRight', 'Allow', [guid]$guid))); $Ansible.Changed = $true }
+      }
+      if ($Ansible.Changed) { Set-Acl -Path "AD:$($domain.DistinguishedName)" -AclObject $acl }
