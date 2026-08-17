@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: windows_badsuccessor_prerequisites
+  author: ThruntOps-vulnerabilities
+  description: Prepare a declared dMSA predecessor relationship for testing.
+  min_ansible_version: "2.12"
+dependencies: []

@@ -1,0 +1,21 @@
+---
+- name: Validate BadSuccessor prerequisite inputs
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+      - windows_badsuccessor_prerequisites_target_profile == 'windows-modern-2025'
+      - windows_badsuccessor_prerequisites_successor | length > 0
+      - windows_badsuccessor_prerequisites_predecessor_dn | length > 0
+    fail_msg: BadSuccessor prerequisites require a Server 2025 profile, dMSA, and predecessor DN.
+
+- name: Prepare the declared dMSA predecessor relationship
+  ansible.windows.win_powershell:
+    parameters:
+      Successor: "{{ windows_badsuccessor_prerequisites_successor }}"
+      PredecessorDn: "{{ windows_badsuccessor_prerequisites_predecessor_dn }}"
+    script: |
+      Import-Module ActiveDirectory -ErrorAction Stop
+      if ((Get-CimInstance Win32_OperatingSystem).Caption -notmatch 'Server 2025') { throw 'This role requires Windows Server 2025.' }
+      $successor = Get-ADServiceAccount -Identity $Successor -Properties 'msDS-ManagedAccountPrecededByLink' -ErrorAction Stop
+      Get-ADObject -Identity $PredecessorDn -ErrorAction Stop | Out-Null
+      if ($successor.'msDS-ManagedAccountPrecededByLink' -ne $PredecessorDn) { Set-ADServiceAccount -Identity $successor -Replace @{'msDS-ManagedAccountPrecededByLink'=$PredecessorDn} -ErrorAction Stop; $Ansible.Changed = $true }
